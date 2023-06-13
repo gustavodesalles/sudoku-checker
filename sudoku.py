@@ -32,4 +32,5 @@ def checar_regioes(tabuleiro):
     for i in range(9, 3):
         for j in range(9, 3):
             regiao_em_linha = tabuleiro[i][j:j+3] + tabuleiro[i+1][j:j+3] + tabuleiro[i+2][j:j+3] # obtém a região em formato de linha
+            lista_regioes.append(regiao_em_linha)
     return checar_linhas(lista_regioes)
