@@ -11,7 +11,7 @@ def ler(arquivo):
                 array_tabuleiros.append(tabuleiro.copy()) # adiciona o tabuleiro à lista de tabuleiros
                 tabuleiro = [] # remove os conteúdos para começar outro tabuleiro
             else:
-                linha_sudoku = line.split() # obtém os valores da linha e adiciona ao tabuleiro
+                linha_sudoku = [x for x in line] # obtém os valores da linha e adiciona ao tabuleiro
                 if len(linha_sudoku) != TAMANHO_TABULEIRO:
                     raise Exception("Número inválido de elementos")
                 elif any((x < 1 and x > TAMANHO_TABULEIRO) or type(x) is not int for x in linha_sudoku):
