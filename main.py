@@ -51,7 +51,7 @@ def main():
     try:
         tabuleiros = sudoku.ler(arquivo)
         for t in tabuleiros:
-            checar(t)
+            checar(t, 5)
     except:
         print("Erro!")
 
