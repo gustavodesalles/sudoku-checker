@@ -36,7 +36,8 @@ def ler(arquivo):
 
 def checar_linha(linha, id_thread, pos, erros, letra):
     if len(set(linha)) != TAMANHO_TABULEIRO: # se for false, há erro na linha
-        erros[id_thread].append(letra + str(pos)) # append em lista é atômico, segundo https://superfastpython.com/thread-safe-list/
+        # append em lista é atômico, segundo https://superfastpython.com/thread-safe-list/
+        erros.setdefault(id_thread, []).append(letra + str(pos)) # adiciona erro à chave da thread, criando uma se não existir; também é atômico
 
 def transpor(tabuleiro):
     return list(map(list, zip(*tabuleiro)))
