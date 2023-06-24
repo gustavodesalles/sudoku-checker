@@ -34,7 +34,7 @@ def ler(arquivo, queue):
                     raise Exception("Tabuleiro inválido")
                 # array_tabuleiros.append(tabuleiro.copy())
                 # return array_tabuleiros
-                queue.put((queue.qsize(), tabuleiro.copy())) 
+                queue.put((queue.qsize() + 1, tabuleiro.copy())) 
 
 def checar_linha(linha, id_thread, pos, erros, letra):
     if len(set(linha)) != TAMANHO_TABULEIRO: # se for false, há erro na linha
