@@ -3,6 +3,7 @@ import sys
 from concurrent.futures import ThreadPoolExecutor
 from multiprocessing import Process, Queue
 import threading
+import time
 
 # def checar(tabuleiro):
 #     linhas = ["L" + str(linha) for linha in sudoku.checar_linhas(tabuleiro)]
@@ -35,7 +36,7 @@ def checar(tabuleiro, n_threads, processo_id):
     for v in valores:
         num_erros += len(v)
     
-    print(f'Processo {processo_id}: {num_erros} erros encontrados', end=" ") # imprime a qtd. de erros, as threads que encontraram, e as linhas/colunas/regiões onde há erro
+    # print(f'Processo {processo_id}: {num_erros} erros encontrados', end=" ") # imprime a qtd. de erros, as threads que encontraram, e as linhas/colunas/regiões onde há erro
     if num_erros > 0:
         texto = ""
         lista_erros = []
@@ -43,9 +44,9 @@ def checar(tabuleiro, n_threads, processo_id):
             if len(valores[i]) < 1:
                 continue
             lista_erros.append(f"T{i+1}: {', '.join(valores[i])}")
-        print(f"({'; '.join(lista_erros)})")
-    else:
-        print("")
+        # print(f"({'; '.join(lista_erros)})")
+    # else:
+        # print("")
 
 def processo_trabalhador(queue, processo_id, num_threads):
     while queue.qsize() > 0:
@@ -54,16 +55,16 @@ def processo_trabalhador(queue, processo_id, num_threads):
         except:
             break
 
-        print(f"Processo {processo_id}: resolvendo quebra-cabeças {tupla_tabuleiro[0]}")
+        # print(f"Processo {processo_id}: resolvendo quebra-cabeças {tupla_tabuleiro[0]}")
         checar(tupla_tabuleiro[1], num_threads, processo_id)
-    print(f"Processo {processo_id} encerrado.")
+    # print(f"Processo {processo_id} encerrado.")
 
-def main():
+def main(x, y):
     arquivo = "input-sample.txt"
     queue = Queue()
 
-    num_processos = 2 # TODO: remover depois
-    num_threads = 5
+    num_processos = x # TODO: remover depois
+    num_threads = y
 
     try:
         sudoku.ler(arquivo, queue)
@@ -83,4 +84,33 @@ def main():
     except:
         print("Erro!")
 
-main()
+for i in range(1, 10):
+    st = time.time()
+    main(1, i)
+    et = time.time()
+    tempo = et - st
+    print(f"Tempo com 1 processo e {i} thread(s): {tempo}")
+
+for i in range(1, 5):
+    st = time.time()
+    main(i, 1)
+    et = time.time()
+    tempo = et - st
+    print(f"Tempo com {i} processo(s) e 1 thread: {tempo}")
+
+for i in range(1, 5):
+    for j in range(1, 10):
+        st = time.time()
+        main(i, j)
+        et = time.time()
+        tempo = et - st
+        print(f"Tempo com {i} processo(s) e {j} thread(s): {tempo}")
+# main(1, 1)
+# main(1, 2)
+# main(1, 3)
+# main(1, 4)
+# main(1, 5)
+# main(1, 6)
+# main(1, 7)
+# main(1, 8)
+# main(1, 9)
