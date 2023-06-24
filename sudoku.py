@@ -1,16 +1,17 @@
 TAMANHO_TABULEIRO = 9 # supõe-se que todos os tabuleiros são 9x9
 
-def ler(arquivo):
+def ler(arquivo, queue):
     a = open(arquivo, "r")
     linhas_texto = a.readlines()
 
-    array_tabuleiros = []
+    # array_tabuleiros = []
     tabuleiro = []
     for line in linhas_texto:
         if line.strip() == '': # se a linha for vazia, é o fim de um tabuleiro
             if len(tabuleiro) != TAMANHO_TABULEIRO:
                 raise Exception("Tabuleiro inválido")
-            array_tabuleiros.append(tabuleiro.copy()) # adiciona o tabuleiro à lista de tabuleiros
+            # array_tabuleiros.append(tabuleiro.copy()) # adiciona o tabuleiro à lista de tabuleiros
+            queue.put((queue.qsize() + 1, tabuleiro.copy())) # adiciona uma tupla contendo uma ID do tabuleiro e o próprio tabuleiro à fila
             tabuleiro = [] # remove os conteúdos para começar outro tabuleiro
         else:
             linha_sudoku = []
@@ -31,8 +32,9 @@ def ler(arquivo):
             if linhas_texto.index(line) == len(linhas_texto) - 1:
                 if len(tabuleiro) != TAMANHO_TABULEIRO:
                     raise Exception("Tabuleiro inválido")
-                array_tabuleiros.append(tabuleiro.copy())
-                return array_tabuleiros
+                # array_tabuleiros.append(tabuleiro.copy())
+                # return array_tabuleiros
+                queue.put((queue.qsize(), tabuleiro.copy())) 
 
 def checar_linha(linha, id_thread, pos, erros, letra):
     if len(set(linha)) != TAMANHO_TABULEIRO: # se for false, há erro na linha

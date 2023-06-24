@@ -1,6 +1,7 @@
 import sudoku
 import sys
 from concurrent.futures import ThreadPoolExecutor
+from multiprocessing import Process, Queue
 import threading
 
 # def checar(tabuleiro):
@@ -14,7 +15,7 @@ import threading
 #     else:
 #         print("")
 
-def checar(tabuleiro, n_threads):
+def checar(tabuleiro, n_threads, processo_id):
     erros = {}
     transposto = sudoku.transpor(tabuleiro)
     tab_em_blocos = sudoku.obter_regioes_como_linhas(tabuleiro)
@@ -34,7 +35,7 @@ def checar(tabuleiro, n_threads):
     for v in valores:
         num_erros += len(v)
     
-    print(f'{num_erros} erros encontrados', end=" ") # imprime a qtd. de erros, as threads que encontraram, e as linhas/colunas/regiões onde há erro
+    print(f'Processo {processo_id}: {num_erros} erros encontrados', end=" ") # imprime a qtd. de erros, as threads que encontraram, e as linhas/colunas/regiões onde há erro
     if num_erros > 0:
         texto = ""
         lista_erros = []
@@ -46,12 +47,39 @@ def checar(tabuleiro, n_threads):
     else:
         print("")
 
+def processo_trabalhador(queue, processo_id, num_threads):
+    while queue.qsize() > 0:
+        try:
+            tupla_tabuleiro = queue.get()
+        except:
+            break
+
+        print(f"Processo {processo_id}: resolvendo quebra-cabeças {tupla_tabuleiro[0]}")
+        checar(tupla_tabuleiro[1], num_threads, processo_id)
+    print(f"Processo {processo_id} encerrado.")
+
 def main():
     arquivo = "input-sample.txt"
+    queue = Queue()
+
+    num_processos = 2 # TODO: remover depois
+    num_threads = 5
+
     try:
-        tabuleiros = sudoku.ler(arquivo)
-        for t in tabuleiros:
-            checar(t, 5)
+        sudoku.ler(arquivo, queue)
+        # for t in tabuleiros:
+        #     checar(t, 5)
+        # for p in range(num_processos): #TODO: trocar por sys.argv
+        #     processo = Process(target=processo_trabalhador, args=(queue, p + 1, num_threads)) #TODO: trocar por sys.argv
+        #     processo.start()
+        processos = [Process(target=processo_trabalhador, args=(queue, i + 1, num_threads)) for i in range(num_processos)] # cria os processos, baseado em https://superfastpython.com/multiprocessing-for-loop/
+
+        for processo in processos:
+            processo.start()
+
+        for processo in processos:
+            processo.join()
+
     except:
         print("Erro!")
 
